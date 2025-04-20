@@ -1,11 +1,17 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-
 import { routeTree } from "./routeTree.gen";
-
+import { configureOAuth } from "@atcute/oauth-browser-client";
 import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
+
+configureOAuth({
+  metadata: {
+    client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
+    redirect_uri: import.meta.env.VITE_OAUTH_REDIRECT_URI,
+  },
+});
 
 const router = createRouter({
   routeTree,

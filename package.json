@@ -17,6 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@atcute/client": "^3.0.1",
     "@atcute/oauth-browser-client": "^1.0.17",
     "@tailwindcss/vite": "^4.1.4",
     "@tanstack/react-router": "^1.114.3",
