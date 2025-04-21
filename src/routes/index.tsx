@@ -2,11 +2,26 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   resolveFromIdentity,
   createAuthorizationUrl,
+  OAuthUserAgent,
 } from "@atcute/oauth-browser-client";
 import { useEffect, type FormEvent } from "react";
+import { XRPC } from "@atcute/client";
 
 export const Route = createFileRoute("/")({
   component: App,
+  loader: async ({ location }) => {
+    // @ts-ignore
+    const agent = new OAuthUserAgent(location?.state?.session);
+    const rpc = new XRPC({ handler: agent });
+    const { data } = await rpc.get("com.atproto.repo.listRecords", {
+      params: {
+        repo: location?.state?.session?.info?.sub,
+        collection: "app.bsky.graph.starterpack",
+      },
+    });
+
+    console.log({ data });
+  },
 });
 
 function App() {
@@ -21,7 +36,7 @@ function App() {
       const auth_url = await createAuthorizationUrl({
         metadata,
         identity,
-        scope: "atproto transition:generic",
+        scope: import.meta.env.VITE_OAUTH_SCOPE,
       });
 
       window.location.assign(auth_url);

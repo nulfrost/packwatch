@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import metadata from "./public/oauth/client-metadata.json" with { type: "json" };
 
 const SERVER_HOST = "127.0.0.1";
-const SERVER_PORT = 12520;
+const SERVER_PORT = 3000;
 
 export default defineConfig({
   server: {
