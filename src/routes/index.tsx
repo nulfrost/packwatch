@@ -5,22 +5,24 @@ import {
   OAuthUserAgent,
 } from "@atcute/oauth-browser-client";
 import { useEffect, type FormEvent } from "react";
-import { XRPC } from "@atcute/client";
+import { simpleFetchHandler, XRPC } from "@atcute/client";
+import "@atcute/bluesky/lexicons";
 
 export const Route = createFileRoute("/")({
   component: App,
   loader: async ({ location }) => {
     // @ts-ignore
     const agent = new OAuthUserAgent(location?.state?.session);
-    const rpc = new XRPC({ handler: agent });
-    const { data } = await rpc.get("com.atproto.repo.listRecords", {
+    const rpc = new XRPC({
+      handler: simpleFetchHandler({ service: "https://api.bsky.app" }),
+    });
+    const { data } = await rpc.get("app.bsky.graph.getActorStarterPacks", {
       params: {
-        repo: location?.state?.session?.info?.sub,
-        collection: "app.bsky.graph.starterpack",
+        // @ts-ignore
+        actor: location?.state?.session?.info?.sub,
       },
     });
-
-    console.log({ data });
+    return data;
   },
 });
 
@@ -59,6 +61,10 @@ function App() {
     authorizationListener();
   }, []);
 
+  const data = Route.useLoaderData();
+
+  console.log({ data });
+
   return (
     <section>
       <h1>login with bsky</h1>
@@ -73,6 +79,15 @@ function App() {
         />
         <button type="submit">login</button>
       </form>
+      {data?.starterPacks?.map((starterPack) => {
+        return (
+          <div key={starterPack.cid}>
+            <h2>{starterPack.record.name}</h2>
+            <p>{starterPack.record.description}</p>
+            <time>{starterPack.record.createdAt}</time>
+          </div>
+        );
+      })}
     </section>
   );
 }
